@@ -13,6 +13,7 @@ const router = new VueRouter({
   routes: [
     {
       path: '/',
+      redirect: '/blu',
       name: 'home',
       component: () => import('@/views/Home.vue'),
       meta: {
