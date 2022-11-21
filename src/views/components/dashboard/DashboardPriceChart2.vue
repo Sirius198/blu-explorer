@@ -400,7 +400,6 @@ export default {
     })
     this.$http.getCoinInfo().then(res => {
       if (res) {
-        console.log(res)
         this.coinInfo = res
         this.tickers = res.tickers
         if (this.tickers.length > 0) {
