@@ -9,9 +9,10 @@
       </div>
     </b-alert>
 
-    <b-row>
+    <!-- Hidden since BLU token is registered on Coingecko -->
+    <!-- <b-row>
       <b-col><dashboard-price-chart-2 /></b-col>
-    </b-row>
+    </b-row> -->
     <!-- Stats Card Vertical -->
     <b-row class="match-height">
       <b-col
