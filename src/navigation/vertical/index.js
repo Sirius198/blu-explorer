@@ -37,6 +37,16 @@ function processMenu() {
     })
   }
   chainMenus.push({
+    title: 'Wallet',
+    href: 'https://bluwallet.app',
+    icon: 'DollarSignIcon',
+  })
+  chainMenus.push({
+    title: 'Faucet',
+    href: 'https://faucet.bluwallet.app',
+    icon: 'DropletIcon',
+  })
+  chainMenus.push({
     title: 'Twitter',
     href: 'https://twitter.com/ping_pub',
     icon: 'TwitterIcon',
