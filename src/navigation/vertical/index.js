@@ -1,5 +1,5 @@
 import store from '@/store'
-import { isTestnet } from '../../libs/utils'
+// import { isTestnet } from '../../libs/utils'
 
 function processMenu() {
   const chainMenus = []
@@ -23,19 +23,19 @@ function processMenu() {
   //   })
   // }
   chainMenus.push({ header: 'LINKS' })
-  if (isTestnet()) {
-    chainMenus.push({
-      title: 'Mainnet Explorer',
-      href: 'https://ping.pub',
-      icon: 'ChromeIcon',
-    })
-  } else {
-    chainMenus.push({
-      title: 'Testnet Explorer',
-      href: 'http://testnet.ping.pub',
-      icon: 'LifeBuoyIcon',
-    })
-  }
+  // if (isTestnet()) {
+  //   chainMenus.push({
+  //     title: 'Mainnet Explorer',
+  //     href: 'https://ping.pub',
+  //     icon: 'ChromeIcon',
+  //   })
+  // } else {
+  //   chainMenus.push({
+  //     title: 'Testnet Explorer',
+  //     href: 'http://testnet.ping.pub',
+  //     icon: 'LifeBuoyIcon',
+  //   })
+  // }
   chainMenus.push({
     title: 'Wallet',
     href: 'https://bluwallet.app',
@@ -48,14 +48,14 @@ function processMenu() {
   })
   chainMenus.push({
     title: 'Twitter',
-    href: 'https://twitter.com/ping_pub',
+    href: 'https://twitter.com/chargeblu',
     icon: 'TwitterIcon',
   })
-  chainMenus.push({
-    title: 'FAQ',
-    href: 'https://github.com/ping-pub/explorer/discussions',
-    icon: 'MessageSquareIcon',
-  })
+  // chainMenus.push({
+  //   title: 'FAQ',
+  //   href: 'https://github.com/ping-pub/explorer/discussions',
+  //   icon: 'MessageSquareIcon',
+  // })
   chainMenus.push({
     title: 'Github',
     href: 'https://github.com/ping-pub/explorer',
