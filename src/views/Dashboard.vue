@@ -1,92 +1,38 @@
 <template>
   <div>
-    <b-alert
-      variant="danger"
-      :show="syncing"
-    >
+    <b-alert variant="danger" :show="syncing">
       <div class="alert-body">
-        <span>No new blocks have been produced since  <strong>{{ latestTime }}</strong> </span>
+        <span>No new blocks have been produced since <strong>{{ latestTime }}</strong> </span>
       </div>
     </b-alert>
 
-    <!-- Hidden since BLU token is registered on Coingecko -->
     <!-- <b-row>
       <b-col><dashboard-price-chart-2 /></b-col>
     </b-row> -->
     <!-- Stats Card Vertical -->
     <b-row class="match-height">
-      <b-col
-        xl="2"
-        md="4"
-        sm="6"
-      >
-        <dashboard-card-vertical
-          icon="BoxIcon"
-          :statistic="height"
-          statistic-title="Height"
-          color="info"
-        />
+      <b-col xl="2" md="4" sm="6">
+        <dashboard-card-vertical icon="BoxIcon" :statistic="height" statistic-title="Height" color="info" />
       </b-col>
-      <b-col
-        xl="2"
-        md="4"
-        sm="6"
-      >
-        <dashboard-card-vertical
-          color="warning"
-          icon="DollarSignIcon"
-          :statistic="supply"
-          statistic-title="Total Supply"
-        />
+      <b-col xl="2" md="4" sm="6">
+        <dashboard-card-vertical color="warning" icon="DollarSignIcon" :statistic="supply"
+          statistic-title="Total Supply" />
       </b-col>
-      <b-col
-        xl="2"
-        md="4"
-        sm="6"
-      >
-        <dashboard-card-vertical
-          color="danger"
-          icon="PercentIcon"
-          :statistic="ratio"
-          :statistic-title="`Bonded: ${bonded}`"
-        />
+      <b-col xl="2" md="4" sm="6">
+        <dashboard-card-vertical color="danger" icon="PercentIcon" :statistic="ratio"
+          :statistic-title="`Bonded: ${bonded}`" />
       </b-col>
-      <b-col
-        xl="2"
-        md="4"
-        sm="6"
-      >
-        <dashboard-card-vertical
-          color="primary"
-          icon="TrendingUpIcon"
-          :statistic="inflation"
-          statistic-title="Inflation"
-        />
+      <b-col xl="2" md="4" sm="6">
+        <dashboard-card-vertical color="primary" icon="TrendingUpIcon" :statistic="inflation"
+          statistic-title="Inflation" />
       </b-col>
-      <b-col
-        xl="2"
-        md="4"
-        sm="6"
-      >
-        <dashboard-card-vertical
-          color="success"
-          icon="AwardIcon"
-          :statistic="communityPool"
-          statistic-title="Community Pool"
-        />
+      <b-col xl="2" md="4" sm="6">
+        <dashboard-card-vertical color="success" icon="AwardIcon" :statistic="communityPool"
+          statistic-title="Community Pool" />
       </b-col>
-      <b-col
-        xl="2"
-        md="4"
-        sm="6"
-      >
-        <dashboard-card-vertical
-          hide-chart
-          color="danger"
-          icon="UserCheckIcon"
-          :statistic="validators"
-          statistic-title="Active Validators"
-        />
+      <b-col xl="2" md="4" sm="6">
+        <dashboard-card-vertical hide-chart color="danger" icon="UserCheckIcon" :statistic="validators"
+          statistic-title="Active Validators" />
       </b-col>
     </b-row>
     <b-card no-body>
@@ -94,149 +40,73 @@
         <b-card-title>Active Proposals</b-card-title>
       </b-card-header>
       <b-card-body>
-        <b-row
-          v-for="prop in proprosals2"
-          :key="prop.id"
-        >
-          <b-col
-            md="6"
-            sm="12"
-          >
-            <b-media
-              no-body
-              class="mb-1"
-            >
-              <b-media-aside
-                @click="showDetail(prop.id)"
-              >
-                <b-avatar
-                  rounded
-                  size="42"
-                  variant="light-primary"
-                >
+        <b-row v-for="prop in proprosals2" :key="prop.id">
+          <b-col md="6" sm="12">
+            <b-media no-body class="mb-1">
+              <b-media-aside @click="showDetail(prop.id)">
+                <b-avatar rounded size="42" variant="light-primary">
                   {{ prop.id }}
                 </b-avatar>
               </b-media-aside>
               <b-link :to="`./${chain}/gov/${prop.id}`">
                 <b-media-body class="d-flex flex-column justify-content-center">
                   <h6 class="transaction-title">
-                    <b-badge
-                      pill
-                      variant="light-primary"
-                    >
+                    <b-badge pill variant="light-primary">
                       {{ formatType(prop.contents['@type']) }}
                     </b-badge>{{ prop.title }}
                   </h6>
-                  <small>will {{ caculateTallyResult(prop.tally) }}  {{ formatEnding(prop.voting_end_time) }}</small>
+                  <small>will {{ caculateTallyResult(prop.tally) }} {{ formatEnding(prop.voting_end_time) }}</small>
                 </b-media-body>
               </b-link>
             </b-media>
           </b-col>
-          <b-col
-            md="6"
-            sm="12"
-          >
+          <b-col md="6" sm="12">
             <b-row>
               <b-col cols="8">
                 <div class="scale">
                   <div class="box">
-                    <b-progress
-                      :max="totalPower? 100 * (totalPower/prop.tally.total) :100"
-                      height="2rem"
-                      show-progress
-                      class="font-small-1"
-                    >
-                      <b-progress-bar
-                        :id="'vote-yes'+prop.id"
-                        variant="success"
-                        :value="percent(prop.tally.yes)"
-                        show-progress
-                        :label="`${percent(prop.tally.yes).toFixed()}%`"
-                      />
-                      <b-progress-bar
-                        :id="'vote-no'+prop.id"
-                        variant="danger"
-                        :value="percent(prop.tally.no)"
-                        :label="`${percent(prop.tally.no).toFixed()}%`"
-                        show-progress
-                      />
-                      <b-progress-bar
-                        :id="'vote-veto'+prop.id"
-                        class="bg-danger bg-darken-4"
-                        :value="percent(prop.tally.veto)"
-                        :label="`${percent(prop.tally.veto).toFixed()}%`"
-                        show-progress
-                      />
-                      <b-progress-bar
-                        :id="'vote-abstain'+prop.id"
-                        variant="secondary"
-                        :value="percent(prop.tally.abstain)"
-                        :label="`${percent(prop.tally.abstain).toFixed()}%`"
-                        show-progress
-                      />
+                    <b-progress :max="totalPower ? 100 * (totalPower / prop.tally.total) : 100" height="2rem"
+                      show-progress class="font-small-1">
+                      <b-progress-bar :id="'vote-yes' + prop.id" variant="success" :value="percent(prop.tally.yes)"
+                        show-progress :label="`${percent(prop.tally.yes).toFixed()}%`" />
+                      <b-progress-bar :id="'vote-no' + prop.id" variant="danger" :value="percent(prop.tally.no)"
+                        :label="`${percent(prop.tally.no).toFixed()}%`" show-progress />
+                      <b-progress-bar :id="'vote-veto' + prop.id" class="bg-danger bg-darken-4"
+                        :value="percent(prop.tally.veto)" :label="`${percent(prop.tally.veto).toFixed()}%`"
+                        show-progress />
+                      <b-progress-bar :id="'vote-abstain' + prop.id" variant="secondary"
+                        :value="percent(prop.tally.abstain)" :label="`${percent(prop.tally.abstain).toFixed()}%`"
+                        show-progress />
                     </b-progress>
                   </div>
-                  <div
-                    v-b-tooltip.hover
-                    title="Threshold"
-                    class="box overlay"
-                    :style="`left:${scaleWidth(prop)}%;`"
-                  />
-                  <div
-                    v-if="tallyParam"
-                    v-b-tooltip.hover
-                    title="Quorum"
-                    class="box overlay"
-                    :style="`left:${Number(tallyParam.quorum) * 100}%; border-color:black`"
-                  />
+                  <div v-b-tooltip.hover title="Threshold" class="box overlay" :style="`left:${scaleWidth(prop)}%;`" />
+                  <div v-if="tallyParam" v-b-tooltip.hover title="Quorum" class="box overlay"
+                    :style="`left:${Number(tallyParam.quorum) * 100}%; border-color:black`" />
                 </div>
-                <b-tooltip
-                  :target="'vote-yes'+prop.id"
-                >
+                <b-tooltip :target="'vote-yes' + prop.id">
                   {{ percent(prop.tally.yes) }}% voters voted Yes
                 </b-tooltip>
-                <b-tooltip
-                  :target="'vote-no'+prop.id"
-                >
+                <b-tooltip :target="'vote-no' + prop.id">
                   {{ percent(prop.tally.no) }}% voters voted No
                 </b-tooltip>
-                <b-tooltip
-                  :target="'vote-veto'+prop.id"
-                >
+                <b-tooltip :target="'vote-veto' + prop.id">
                   {{ percent(prop.tally.veto) }}% voters voted No With Veto
                 </b-tooltip>
-                <b-tooltip
-                  :target="'vote-abstain'+prop.id"
-                >
+                <b-tooltip :target="'vote-abstain' + prop.id">
                   {{ percent(prop.tally.abstain) }}% voters voted Abstain
                 </b-tooltip>
               </b-col>
-              <b-col
-                cols="4"
-                style="padding-top: 0.5em"
-              >
-                <b-button
-                  v-b-modal.operation-modal
-                  variant="primary"
-                  size="sm"
-                  class="mb-2"
-                  @click="selectProposal('Vote',prop.id, prop.title)"
-                >
-                  {{ myVotes[prop.id] ? `${myVotes[prop.id]}`: 'Vote' }}
+              <b-col cols="4" style="padding-top: 0.5em">
+                <b-button v-b-modal.operation-modal variant="primary" size="sm" class="mb-2"
+                  @click="selectProposal('Vote', prop.id, prop.title)">
+                  {{ myVotes[prop.id] ? `${myVotes[prop.id]}` : 'Vote' }}
                 </b-button>
               </b-col>
             </b-row>
           </b-col>
-          <b-col
-            cols="12"
-            :class="detailId === prop.id? 'd-block': 'd-none'"
-          >
-            <b-card
-              border-variant="primary"
-              bg-variant="transparent"
-              class="shadow-none"
-              style="max-height:350px;overflow: auto;"
-            >
+          <b-col cols="12" :class="detailId === prop.id ? 'd-block' : 'd-none'">
+            <b-card border-variant="primary" bg-variant="transparent" class="shadow-none"
+              style="max-height:350px;overflow: auto;">
               <VueMarkdown class="pb-1">
                 {{ addNewLine(prop.description) }}
               </VueMarkdown>
@@ -251,130 +121,75 @@
         </div>
       </b-card-body>
     </b-card>
-    <b-card
-      border-variant="primary"
-      bg-variant="transparent"
-      class="shadow-none"
-    >
+    <b-card border-variant="primary" bg-variant="transparent" class="shadow-none">
       <b-card-title class="d-flex justify-content-between text-capitalize">
         <span>{{ walletName }} Assets </span>
         <small>
-          <b-link
-            v-if="address"
-            :to="`./${chain}/account/${address}`"
-          >
+          <b-link v-if="address" :to="`./${chain}/account/${address}`">
             More
           </b-link>
-          <b-link
-            v-else
-            :to="`/wallet/accounts`"
-          >
+          <b-link v-else :to="`/wallet/accounts`">
             Not connected?
           </b-link>
         </small>
       </b-card-title>
       <b-row>
-        <b-col
-          lg="3"
-          sm="6"
-        >
-          <dashboard-card-horizontal
-            icon="DollarSignIcon"
-            color="success"
-            :statistic="walletBalances"
-            statistic-title="Balances"
-          />
+        <b-col lg="3" sm="6">
+          <dashboard-card-horizontal icon="DollarSignIcon" color="success" :statistic="walletBalances"
+            statistic-title="Balances" />
         </b-col>
-        <b-col
-          lg="3"
-          sm="6"
-        >
-          <dashboard-card-horizontal
-            icon="LockIcon"
-            :statistic="walletStaking"
-            statistic-title="Staking"
-          />
+        <b-col lg="3" sm="6">
+          <dashboard-card-horizontal icon="LockIcon" :statistic="walletStaking" statistic-title="Staking" />
         </b-col>
-        <b-col
-          lg="3"
-          sm="6"
-        >
-          <dashboard-card-horizontal
-            icon="ArrowUpCircleIcon"
-            color="info"
-            :statistic="walletRewards"
-            statistic-title="Rewards"
-          />
+        <b-col lg="3" sm="6">
+          <dashboard-card-horizontal icon="ArrowUpCircleIcon" color="info" :statistic="walletRewards"
+            statistic-title="Rewards" />
         </b-col>
-        <b-col
-          lg="3"
-          sm="6"
-        >
-          <dashboard-card-horizontal
-            icon="UnlockIcon"
-            color="danger"
-
-            :statistic="walletUnbonding"
-            statistic-title="Unbonding"
-          />
+        <b-col lg="3" sm="6">
+          <dashboard-card-horizontal icon="UnlockIcon" color="danger" :statistic="walletUnbonding"
+            statistic-title="Unbonding" />
         </b-col>
       </b-row>
       <b-row v-if="stakingList && stakingList.length > 0">
         <b-col>
           <b-card no-body>
-            <b-table
-              :items="stakingList"
-              :fields="fields"
-              striped
-              hover
-              responsive="sm"
-              stacked="sm"
-            >
+            <b-table :items="stakingList" :fields="fields" striped hover responsive="sm" stacked="sm">
               <template #cell(action)="data">
                 <!-- size -->
-                <b-button-group
-                  size="sm"
-                >
-                  <b-button
-                    v-b-modal.operation-modal
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    v-b-tooltip.hover.top="'Delegate'"
-                    variant="outline-primary"
-                    @click="selectDelegation(data,'Delegate')"
-                  >
+                <b-button-group size="sm" class="d-none">
+                  <b-button v-b-modal.operation-modal v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    v-b-tooltip.hover.top="'Delegate'" variant="outline-primary"
+                    @click="selectDelegation(data, 'Delegate')">
                     <feather-icon icon="LogInIcon" />
                   </b-button>
-                  <b-button
-                    v-b-modal.operation-modal
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    v-b-tooltip.hover.top="'Redelegate'"
-                    variant="outline-primary"
-                    @click="selectDelegation(data,'Redelegate')"
-                  >
+                  <b-button v-b-modal.operation-modal v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    v-b-tooltip.hover.top="'Redelegate'" variant="outline-primary"
+                    @click="selectDelegation(data, 'Redelegate')">
                     <feather-icon icon="ShuffleIcon" />
                   </b-button>
-                  <b-button
-                    v-b-modal.operation-modal
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    v-b-tooltip.hover.top="'Unbond'"
-                    variant="outline-primary"
-                    @click="selectDelegation(data,'Unbond')"
-                  >
+                  <b-button v-b-modal.operation-modal v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    v-b-tooltip.hover.top="'Unbond'" variant="outline-primary"
+                    @click="selectDelegation(data, 'Unbond')">
                     <feather-icon icon="LogOutIcon" />
                   </b-button>
                 </b-button-group>
+                <b-dropdown v-b-modal.operation-modal split variant="outline-primary" text="Delegate" class="mr-1"
+                  size="sm" @click="selectDelegation(data, 'Delegate')">
+                  <template #button-content>
+                    Delegate
+                  </template>
+                  <b-dropdown-item v-b-modal.operation-modal @click="selectDelegation(data, 'Redelegate')">
+                    Redelegate
+                  </b-dropdown-item>
+                  <b-dropdown-item v-b-modal.operation-modal @click="selectDelegation(data, 'Unbond')">
+                    Unbond
+                  </b-dropdown-item>
+                </b-dropdown>
+                <b-button v-b-modal.operation-modal variant="outline-primary" size="sm" @click="selectWithdraw()">
+                  Widthdraw Rewards
+                </b-button>
               </template>
             </b-table>
-            <b-card-footer class="text-right">
-              <b-button
-                v-b-modal.operation-modal
-                variant="outline-primary"
-                @click="selectWithdraw()"
-              >
-                <feather-icon icon="AwardIcon" />
-                Widthdraw Rewards
-              </b-button>
-            </b-card-footer>
           </b-card>
         </b-col>
       </b-row>
@@ -386,22 +201,14 @@
               <b-card-title>Unbonding Tokens</b-card-title>
             </b-card-header>
             <b-card-body class="pl-0 pr-0">
-              <b-row
-                v-for="item in unbonding"
-                :key="item.validator_address"
-              >
+              <b-row v-for="item in unbonding" :key="item.validator_address">
                 <b-col cols="12">
-                  <span class="font-weight-bolder">From: <router-link :to="`../staking/${item.validator_address}`">{{ item.validator_address }}</router-link></span>
+                  <span class="font-weight-bolder">From: <router-link :to="`../staking/${item.validator_address}`">{{
+                      item.validator_address
+                  }}</router-link></span>
                 </b-col>
                 <b-col cols="12">
-                  <b-table
-                    :items="item.entries"
-                    class="mt-1"
-                    striped
-                    hover
-                    responsive="sm"
-                    stacked="sm"
-                  >
+                  <b-table :items="item.entries" class="mt-1" striped hover responsive="sm" stacked="sm">
                     <template #cell(completion_time)="data">
                       {{ formatDate(data.item.completion_time) }}
                     </template>
@@ -418,30 +225,16 @@
           </b-card>
         </b-col>
       </b-row>
-      <b-row
-        v-if="address"
-        class="mt-1"
-      >
+      <b-row v-if="address" class="mt-1">
         <b-col cols="6">
-          <b-button
-            v-b-modal.operation-modal
-            block
-            variant="success"
-            @click="selectSend()"
-          >
+          <b-button v-b-modal.operation-modal block variant="success" @click="selectSend()">
             <feather-icon icon="SendIcon" />
             Send
           </b-button>
         </b-col>
         <b-col cols="6">
-          <b-button
-            block
-            variant="info"
-            :to="`${chain}/account/${address}/receive`"
-          >
-            <feather-icon
-              icon="PlusCircleIcon"
-            />
+          <b-button block variant="info" :to="`${chain}/account/${address}/receive`">
+            <feather-icon icon="PlusCircleIcon" />
             Receive
           </b-button>
         </b-col>
@@ -453,13 +246,9 @@
         Connect Wallet
       </b-card>
     </router-link>
-    <operation-modal
-      :address="address"
-      :validator-address="selectedValidator"
-      :type="operationModalType"
-      :proposal-id="selectedProposalId"
-      :proposal-title="selectedTitle"
-    />
+    <operation-modal :address="address" :validator-address="selectedValidator" :type="operationModalType"
+      :proposal-id="selectedProposalId" :proposal-title="selectedTitle" />
+    <div id="txevent" />
   </div>
 </template>
 
@@ -467,6 +256,7 @@
 import {
   BRow, BCol, BAlert, BCard, BTable, BFormCheckbox, BCardHeader, BCardTitle, BMedia, BMediaAside, BMediaBody, BAvatar,
   BCardBody, BLink, BButtonGroup, BButton, BTooltip, VBModal, VBTooltip, BCardFooter, BProgress, BProgressBar, BBadge,
+  BDropdown, BDropdownItem,
 } from 'bootstrap-vue'
 import {
   formatNumber, formatTokenAmount, isToken, percent, timeIn, toDay, toDuration, tokenFormatter, getLocalAccounts,
@@ -488,6 +278,8 @@ export default {
     BButtonGroup,
     BTooltip,
     BButton,
+    BDropdown,
+    BDropdownItem,
     BRow,
     BCol,
     BAlert,
@@ -647,12 +439,28 @@ export default {
       })
     }
   },
+  mounted() {
+    const elem = document.getElementById('txevent')
+    elem.addEventListener('txcompleted', () => {
+      const key = this.$store?.state?.chains?.defaultWallet
+      if (key) {
+        const accounts = getLocalAccounts() || {}
+        const account = Object.entries(accounts)
+          .map(v => ({ wallet: v[0], address: v[1].address.find(x => x.chain === this.$store.state.chains.selected.chain_name) }))
+          .filter(v => v.address)
+          .find(x => x.wallet === key)
+        if (account) {
+          this.fetchAccount(account.address.addr)
+        }
+      }
+    })
+  },
   methods: {
     caculateTallyResult(tally) {
       if (this.tallyParam && tally && this.totalPower > 0) {
         if (tally.veto < Number(this.tallyParam.veto_threshold)
-        && tally.yes > Number(this.tallyParam.threshold)
-        && tally.total / this.totalPower > Number(this.tallyParam.quorum)) {
+          && tally.yes > Number(this.tallyParam.threshold)
+          && tally.total / this.totalPower > Number(this.tallyParam.quorum)) {
           return 'pass'
         }
       }
@@ -700,8 +508,6 @@ export default {
       return '-'
     },
     fetchAccount(address) {
-      const conf = this.$http.getSelectedConfig()
-      const decimal = conf.assets[0].exponent || '6'
       this.address = address
       this.$http.getBankAccountBalance(address).then(bal => {
         this.walletBalances = this.formatToken(bal)
@@ -819,13 +625,14 @@ export default {
 
 <style>
 .addzone {
-    border: 2px dashed #ced4da;
-    background: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    box-shadow: none;
+  border: 2px dashed #ced4da;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: none;
 }
+
 .addzone :hover {
-    border: 2px dashed #7367F0;
+  border: 2px dashed #7367F0;
 }
 </style>

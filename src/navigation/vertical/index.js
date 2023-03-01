@@ -38,17 +38,17 @@ function processMenu() {
   // }
   chainMenus.push({
     title: 'Wallet',
-    href: 'https://bluwallet.app',
+    href: 'https://wallet.mun.money',
     icon: 'DollarSignIcon',
   })
   chainMenus.push({
     title: 'Faucet',
-    href: 'https://faucet.bluwallet.app',
+    href: 'https://faucet.mun.money',
     icon: 'DropletIcon',
   })
   chainMenus.push({
     title: 'Twitter',
-    href: 'https://twitter.com/chargeblu',
+    href: 'https://twitter.com/mun',
     icon: 'TwitterIcon',
   })
   // chainMenus.push({
@@ -56,11 +56,11 @@ function processMenu() {
   //   href: 'https://github.com/ping-pub/explorer/discussions',
   //   icon: 'MessageSquareIcon',
   // })
-  chainMenus.push({
-    title: 'Github',
-    href: 'https://github.com/ping-pub/explorer',
-    icon: 'GithubIcon',
-  })
+  // chainMenus.push({
+  //   title: 'Github',
+  //   href: 'https://github.com/ping-pub/explorer',
+  //   icon: 'GithubIcon',
+  // })
 
   return chainMenus
 }
